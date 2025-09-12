@@ -19,7 +19,15 @@ const IMAGES = [
   {id:'argue', label:'Dispute 😡', effect:{mood:'angry', delta:8}},
   {id:'weird', label:'Bizarre 🤨', effect:{mood:'curious', delta:4}},
   {id:'hero', label:'Héros 🏅', effect:{mood:'admire', delta:3}},
-  {id:'panic', label:'Panique 🫢', effect:{mood:'panicked', delta:10}}
+  {id:'panic', label:'Panique 🫢', effect:{mood:'panicked', delta:10}},
+
+  // Nouveaux emojis / émotions
+  {id:'love', label:'Amour ❤️', effect:{mood:'love', delta:5}},       // augmente bonheur mais aussi vulnérabilité
+  {id:'joy', label:'Joie intense 🤩', effect:{mood:'joy', delta:6}},  // boost fort mais temporaire
+  {id:'grief', label:'Tristesse 😢', effect:{mood:'grief', delta:4}}, // augmente tristesse + un peu d’agressivité
+  {id:'fear', label:'Peur 👻', effect:{mood:'fear', delta:7}},        // panique contagieuse
+  {id:'hope', label:'Espoir 🌈', effect:{mood:'hope', delta:3}},      // réduit un peu l’agressivité
+  {id:'jealous', label:'Jalousie 😒', effect:{mood:'jealous', delta:6}} // pousse vers colère silencieuse
 ];
 
 // Initialisation
@@ -39,7 +47,7 @@ function initNPCs(){
   }
 }
 function randomEmoji(){
-  const set = ['🙂','😐','😴','😬','🤓','🫡','🧐','😮'];
+  const set = ['🙂','😐','😴','😬','🤓','🫡','🧐','😮','😶'];
   return set[Math.floor(Math.random()*set.length)];
 }
 
@@ -70,13 +78,29 @@ function sampleIndices(n){
 }
 function applyEffectToNPC(i,e){
   const npc = npcs[i];
-  if(e.mood === 'angry' || e.mood==='panicked'){
-    npc.aggression += Math.max(2, Math.floor(e.delta/2));
-  } else if(e.mood==='sad'){
-    npc.aggression += 1;
-  } else if(e.mood==='admire'){
-    npc.aggression = Math.max(0, npc.aggression-1);
+
+  // gestion des humeurs et impacts
+  switch(e.mood){
+    case 'angry':
+    case 'panicked':
+    case 'fear':
+      npc.aggression += Math.max(2, Math.floor(e.delta/2));
+      break;
+    case 'sad':
+    case 'grief':
+    case 'jealous':
+      npc.aggression += 1;
+      break;
+    case 'admire':
+    case 'hope':
+    case 'love':
+      npc.aggression = Math.max(0, npc.aggression-2);
+      break;
+    case 'joy':
+      npc.aggression = Math.max(0, npc.aggression-1);
+      break;
   }
+
   npc.mood = e.mood;
   renderNPC(npc);
 }
@@ -103,7 +127,13 @@ function moodEmoji(npc){
     case 'angry': return '😠';
     case 'curious': return '🧐';
     case 'admire': return '🤩';
-    case 'panicked': return '😱';
+    case 'panicked': return '🫨';
+    case 'love': return '😍';
+    case 'joy': return '😁';
+    case 'grief': return '😭';
+    case 'fear': return '😱';
+    case 'hope': return '🥺';
+    case 'jealous': return '😒';
     default: return randomEmoji();
   }
 }

@@ -16,7 +16,8 @@
   <div id="grid"></div>
 
   <script>
-    const emojis = ["😀","😎","😡","😭","🤖","👽","😺","👻","🤡","👩","👨","🧙","🧛","🧟","🧚","🧜","🧝","🦸","🦹","🐶","🐱","🐵","🐸","🐼","🐧","🐤","🐢","🐙","🐝","🦋"];
+    // Emojis uniquement avec des émotions
+    const emojis = ["😀","😁","😂","🤣","😅","😊","😍","😘","😎","😔","😭","😡","🤯","😱","😴","🤔","😇","😈","🥶","🥵","🤢","🤠","🥳","😤","😒","😬","🤐","🤓","😕","🤡","🥺"];
 
     const grid = document.getElementById("grid");
     const tv = document.getElementById("tv");
@@ -55,29 +56,68 @@
       applyEffect(e);
     }
 
-    // Exemple d'effets selon l'emoji choisi
+    // Effets différents pour chaque emoji
     function applyEffect(e) {
-      if (e === "🤖") {
-        // Les robots remplacent 5 emojis aléatoires
-        for (let i = 0; i < 5; i++) {
-          const idx = Math.floor(Math.random() * population.length);
-          population[idx] = "🤖";
-          grid.children[idx].textContent = "🤖";
-        }
-      } else if (e === "😭") {
-        // Les pleurs contaminent : transformer 3 voisins en 😭
-        for (let i = 0; i < 3; i++) {
-          const idx = Math.floor(Math.random() * population.length);
-          population[idx] = "😭";
-          grid.children[idx].textContent = "😭";
-        }
-      } else if (e === "😎") {
-        // Cool vibes : tout le monde devient 😎
-        for (let i = 0; i < population.length; i++) {
-          population[i] = "😎";
-          grid.children[i].textContent = "😎";
-        }
+      switch(e) {
+        case "😭": // Les pleurs contaminent 5 voisins
+          transformRandom(5, "😭");
+          break;
+        case "😎": // Cool vibes : 50% deviennent 😎
+          transformPercentage(0.5, "😎");
+          break;
+        case "😀": // Bonne humeur : tout le monde devient 😀
+          transformAll("😀");
+          break;
+        case "😡": // Colère : 10 deviennent 😡
+          transformRandom(10, "😡");
+          break;
+        case "🥳": // Fête : 30% deviennent 🥳
+          transformPercentage(0.3, "🥳");
+          break;
+        case "😴": // Sommeil : 20% deviennent 😴
+          transformPercentage(0.2, "😴");
+          break;
+        case "🤔": // Réflexion : 5 deviennent 🤔
+          transformRandom(5, "🤔");
+          break;
+        case "😱": // Panique : 40% deviennent 😱
+          transformPercentage(0.4, "😱");
+          break;
+        case "😍": // Amour : 25% deviennent 😍
+          transformPercentage(0.25, "😍");
+          break;
+        case "🤯": // Explosion mentale : tout le monde devient différent aléatoirement
+          for (let i = 0; i < population.length; i++) {
+            const newE = randomEmoji();
+            population[i] = newE;
+            grid.children[i].textContent = newE;
+          }
+          break;
+        default:
+          // Par défaut : transformer 3 au hasard en l'emoji choisi
+          transformRandom(3, e);
       }
+    }
+
+    // Fonctions utilitaires pour transformer la population
+    function transformRandom(n, emoji) {
+      for (let i = 0; i < n; i++) {
+        const idx = Math.floor(Math.random() * population.length);
+        population[idx] = emoji;
+        grid.children[idx].textContent = emoji;
+      }
+    }
+
+    function transformAll(emoji) {
+      for (let i = 0; i < population.length; i++) {
+        population[i] = emoji;
+        grid.children[i].textContent = emoji;
+      }
+    }
+
+    function transformPercentage(p, emoji) {
+      const n = Math.floor(population.length * p);
+      transformRandom(n, emoji);
     }
 
     // Mutation aléatoire toutes les 5 secondes

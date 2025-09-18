@@ -1,48 +1,99 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>We Become What We Behold — Clone</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Jeu des Emojis Population</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f5f5f5; }
+    #tv { font-size: 5rem; border: 4px solid #333; width: 150px; height: 150px; margin: 20px auto; display: flex; align-items: center; justify-content: center; background: white; }
+    #grid { display: grid; grid-template-columns: repeat(6, 60px); grid-gap: 10px; justify-content: center; }
+    .emoji { font-size: 2rem; cursor: pointer; }
+  </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <h1>We Become What We Behold — Clone</h1>
-    <div class="credit">Prototype autonome — Ouvrir le fichier dans un navigateur (desktop & mobile)</div>
-  </header>
+  <h1>Population Emoji</h1>
+  <div id="tv">📺</div>
+  <div id="grid"></div>
 
-  <div class="main">
-    <div class="world">
-      <div class="square">
-        <div class="screen" id="screen">Aucun cliché — Appuie pour photographier</div>
-        <div class="controls">
-          <button id="snap" class="btn-large">Prendre une photo</button>
-          <button id="nextScene" class="secondary">Afficher sur l'écran</button>
-          <div style="flex:1"></div>
-          <div class="hud">
-            <div>Score: <span id="score">0</span></div>
-            <div style="width:120px">
-              <div class="progress" aria-hidden><i id="meter"></i></div>
-            </div>
-          </div>
-        </div>
-        <div class="stage" id="stage" aria-hidden>
-          <!-- NPCs injectés par JS -->
-        </div>
-      </div>
-    </div>
-  </div>
+  <script>
+    const emojis = ["😀","😎","😡","😭","🤖","👽","😺","👻","🤡","👩","👨","🧙","🧛","🧟","🧚","🧜","🧝","🦸","🦹","🐶","🐱","🐵","🐸","🐼","🐧","🐤","🐢","🐙","🐝","🦋"];
 
-  <footer>
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div class="credit">Fichier autonome — Compatible mobile</div>
-      <div id="status" style="font-size:13px;color:var(--muted)"></div>
-    </div>
-  </footer>
-</div>
+    const grid = document.getElementById("grid");
+    const tv = document.getElementById("tv");
 
-<script src="script.js"></script>
+    let population = [];
+
+    // Initialiser la population
+    function initPopulation() {
+      population = [];
+      grid.innerHTML = "";
+      for (let i = 0; i < 30; i++) {
+        const e = randomEmoji();
+        population.push(e);
+        addEmojiToGrid(e, i);
+      }
+    }
+
+    // Ajouter un emoji cliquable dans la grille
+    function addEmojiToGrid(e, index) {
+      const span = document.createElement("span");
+      span.className = "emoji";
+      span.textContent = e;
+      span.addEventListener("click", () => showOnTV(index));
+      grid.appendChild(span);
+    }
+
+    // Choisir un emoji aléatoire
+    function randomEmoji() {
+      return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    // Afficher un emoji sur la télévision et appliquer effet
+    function showOnTV(index) {
+      const e = population[index];
+      tv.textContent = e;
+      applyEffect(e);
+    }
+
+    // Exemple d'effets selon l'emoji choisi
+    function applyEffect(e) {
+      if (e === "🤖") {
+        // Les robots remplacent 5 emojis aléatoires
+        for (let i = 0; i < 5; i++) {
+          const idx = Math.floor(Math.random() * population.length);
+          population[idx] = "🤖";
+          grid.children[idx].textContent = "🤖";
+        }
+      } else if (e === "😭") {
+        // Les pleurs contaminent : transformer 3 voisins en 😭
+        for (let i = 0; i < 3; i++) {
+          const idx = Math.floor(Math.random() * population.length);
+          population[idx] = "😭";
+          grid.children[idx].textContent = "😭";
+        }
+      } else if (e === "😎") {
+        // Cool vibes : tout le monde devient 😎
+        for (let i = 0; i < population.length; i++) {
+          population[i] = "😎";
+          grid.children[i].textContent = "😎";
+        }
+      }
+    }
+
+    // Mutation aléatoire toutes les 5 secondes
+    function mutatePopulation() {
+      const count = Math.floor(population.length * 0.2); // 20%
+      for (let i = 0; i < count; i++) {
+        const idx = Math.floor(Math.random() * population.length);
+        const e = randomEmoji();
+        population[idx] = e;
+        grid.children[idx].textContent = e;
+      }
+    }
+
+    // Lancer le jeu
+    initPopulation();
+    setInterval(mutatePopulation, 5000);
+  </script>
 </body>
 </html>
